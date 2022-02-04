@@ -9,16 +9,20 @@ export default class Sketch {
     this.width = this.container.offsetWidth;
     this.height = this.container.offsetHeight;
 
-    this.camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
-    camera.position.z = 1;
+    this.camera = new THREE.PerspectiveCamera(
+      70,
+      this.width / this.height,
+      0.01,
+      10
+    );
+    this.camera.position.z = 1;
 
-    const scene = new THREE.Scene();
+    this.scene = new THREE.Scene();
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setAnimationLoop(animation);
-    let container = document.getElementById('container');
-    container.appendChild(renderer.domElement);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(this.width, this.height);
+
+    this.container.appendChild(this.renderer.domElement);
 
     this.time = 0;
     this.addObjects();
