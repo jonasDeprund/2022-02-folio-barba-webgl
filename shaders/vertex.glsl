@@ -2,6 +2,7 @@ uniform float time;
 uniform float uProgress;
 uniform vec2 uResolution;
 uniform vec2 uQuadSize;
+uniform vec2 uCorners;
 varying vec2 vSize;
 
 varying vec2 vUv;
