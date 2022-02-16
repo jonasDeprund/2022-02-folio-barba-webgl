@@ -15,8 +15,9 @@ void main(){
 
     fullScreenState.x *= uResolution.x / uQuadSize.x;
     fullScreenState.y *= uResolution.y / uQuadSize.y;
+    float cornersProgress = mix(uCorners.x, uCorners.y, uv.x);
     
-    vec4 finalState = mix(defaultState, fullScreenState, uProgress);
+    vec4 finalState = mix(defaultState, fullScreenState, cornersProgress);
     
     vSize = mix(uQuadSize, uResolution, uProgress);
     
