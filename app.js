@@ -85,16 +85,32 @@ export default class Sketch {
       .timeline()
       .to(this.material.uniforms.uCorners.value, {
         x: 1,
+        duration: 1,
       })
-      .to(this.material.uniforms.uCorners.value, {
-        y: 1,
-      })
-      .to(this.material.uniforms.uCorners.value, {
-        z: 1,
-      })
-      .to(this.material.uniforms.uCorners.value, {
-        w: 1,
-      });
+      .to(
+        this.material.uniforms.uCorners.value,
+        {
+          y: 1,
+          duration: 1,
+        },
+        0.1
+      )
+      .to(
+        this.material.uniforms.uCorners.value,
+        {
+          z: 1,
+          duration: 1,
+        },
+        0.2
+      )
+      .to(
+        this.material.uniforms.uCorners.value,
+        {
+          w: 1,
+          duration: 1,
+        },
+        0.3
+      );
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
@@ -104,8 +120,8 @@ export default class Sketch {
   render() {
     this.time += 0.05;
     this.material.uniforms.time.value = this.time;
-    // this.material.uniforms.uProgress.value = this.settings.progress;
-    this.tl.progress(this.settings.progress);
+    this.material.uniforms.uProgress.value = this.settings.progress;
+    // this.tl.progress(this.settings.progress);
     this.mesh.rotation.x = this.time / 2000;
     this.mesh.rotation.y = this.time / 1000;
     this.renderer.render(this.scene, this.camera);
