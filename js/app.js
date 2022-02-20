@@ -34,11 +34,6 @@ export default class Sketch {
     this.container.appendChild(this.renderer.domElement);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-    this.asscroll = new ASScroll();
-
-    this.asscroll.enable({
-      horizontalScroll: true,
-    });
     this.time = 0;
     this.setupSettings();
     this.resize();
@@ -83,6 +78,12 @@ export default class Sketch {
       },
       vertexShader: vertex,
       fragmentShader: fragment,
+    });
+
+    this.asscroll = new ASScroll();
+
+    this.asscroll.enable({
+      horizontalScroll: true,
     });
 
     this.tl = gsap
@@ -148,9 +149,11 @@ export default class Sketch {
   }
 
   setPosition() {
+    console.log(this.asscroll.currentPos);
     this.imageStore.forEach((o) => {
-      o.mesh.position.x = o.left - this.width / 2 + o.width / 2;
-      o.mesh.position.y = 0;
+      o.mesh.position.x =
+        -this.asscroll.currentPos + o.left - this.width / 2 + o.width / 2;
+      o.mesh.position.y = -o.top + this.height / 2 - o.height / 2;
     });
   }
 
