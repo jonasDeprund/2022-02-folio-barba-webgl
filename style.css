@@ -137,5 +137,5 @@ figure img {
 }
 
 canvas {
-  display: none !important;
+  /* display: none !important; */
 }
