@@ -1,12 +1,11 @@
+import ASScroll from '@ashthornton/asscroll';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import fragment from './shaders/fragment.glsl';
 import vertex from './shaders/vertex.glsl';
-import testTexture from './img/texture.jpg';
+import testTexture from '../img/texture.jpg';
 import * as dat from 'dat.gui';
 import gsap from 'gsap';
-
-console.log(testTexture);
 
 export default class Sketch {
   constructor(options) {
@@ -35,6 +34,11 @@ export default class Sketch {
     this.container.appendChild(this.renderer.domElement);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
+    this.asscroll = new ASScroll();
+
+    this.asscroll.enable({
+      horizontalScroll: true,
+    });
     this.time = 0;
     this.setupSettings();
     this.resize();
@@ -64,7 +68,7 @@ export default class Sketch {
   }
 
   addObjects() {
-    this.geometry = new THREE.PlaneBufferGeometry(300, 300, 100, 100);
+    this.geometry = new THREE.PlaneBufferGeometry(1, 1, 100, 100);
 
     this.material = new THREE.ShaderMaterial({
       // wireframe: true,
@@ -113,8 +117,34 @@ export default class Sketch {
       );
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
+    this.mesh.scale.set(300, 300, 1);
+    // this.scene.add(this.mesh);
     this.mesh.position.x = 300;
+
+    this.images = [...document.querySelectorAll('.js-image')];
+    this.materials = [];
+
+    this.imageStore = this.images.map((img) => {
+      let bounds = img.getBoundClientRect();
+      let m = this.material.clone();
+      this.materials.push(m);
+      let texture = new THREE.Texture(img);
+      texture.needsUpdate = true;
+
+      m.uniforms.uTexture.value = texture;
+
+      let mesh = new THREE.Mesh(this.geometry, m);
+      this.scene.add(mesh);
+      this.mesh.scale.set(bounds.width, bounds.height, 1);
+      return {
+        img: img,
+        mesh: mesh,
+        width: bounds.width,
+        height: bounds.height,
+        top: bounds.top,
+        left: bounds.left,
+      };
+    });
   }
 
   render() {
