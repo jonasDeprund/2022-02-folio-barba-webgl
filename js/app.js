@@ -34,10 +34,19 @@ export default class Sketch {
     this.container.appendChild(this.renderer.domElement);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
+    this.materials = [];
+
+    this.asscroll = new ASScroll();
+
+    this.asscroll.enable({
+      // horizontalScroll: true,
+      disableRaf: true,
+    });
+
     this.time = 0;
     this.setupSettings();
-    this.resize();
     this.addObjects();
+    this.resize();
     this.render();
     this.setupResize();
   }
@@ -56,6 +65,26 @@ export default class Sketch {
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
+
+    this.materials.forEach((m) => {
+      m.uniforms.uResolution.value.x = this.width;
+      m.uniforms.uResolution.value.y = this.height;
+    });
+
+    this.imageStore.forEach((i) => {
+      let bounds = i.img.getBoundingClientRect();
+      i.mesh.scale.set(bounds.width, bounds.height, 1);
+      i.top = bounds.top;
+      i.left = bounds.left + this.asscroll.currentPos;
+      i.width = bounds.width;
+      i.height = bounds.height;
+
+      i.mesh.material.uniforms.uQuadSize.value.x = bounds.width;
+      i.mesh.material.uniforms.uQuadSize.value.y = bounds.height;
+
+      i.mesh.material.uniforms.uTextureSize.value.x = bounds.width;
+      i.mesh.material.uniforms.uTextureSize.value.y = bounds.height;
+    });
   }
 
   setupResize() {
@@ -78,12 +107,6 @@ export default class Sketch {
       },
       vertexShader: vertex,
       fragmentShader: fragment,
-    });
-
-    this.asscroll = new ASScroll();
-
-    this.asscroll.enable({
-      horizontalScroll: true,
     });
 
     this.tl = gsap
@@ -123,7 +146,6 @@ export default class Sketch {
     this.mesh.position.x = 300;
 
     this.images = [...document.querySelectorAll('.js-image')];
-    this.materials = [];
 
     this.imageStore = this.images.map((img) => {
       let bounds = img.getBoundingClientRect();
@@ -161,6 +183,7 @@ export default class Sketch {
     this.time += 0.05;
     this.material.uniforms.time.value = this.time;
     // this.material.uniforms.uProgress.value = this.settings.progress;
+    this.asscroll.update();
     this.setPosition();
     this.tl.progress(this.settings.progress);
     this.mesh.rotation.x = this.time / 2000;
