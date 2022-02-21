@@ -41,19 +41,37 @@ export default class Sketch {
       disableRaf: true,
     });
 
+    this.asscroll.enable({
+      horizontalScroll: !document.body.classList.contains('b-inside'),
+    });
+
     this.time = 0;
     // this.setupSettings();
     this.addObjects();
     this.resize();
     this.render();
-    this.barba()
+    this.barba();
     this.setupResize();
   }
 
-  barba(){
+  barba() {
     barba.init({
-      
-    })
+      transitions: [
+        {
+          name: 'default-transition',
+          leave(data) {
+            return gsap.timeline().to(data.current.container, {
+              opacity: 0,
+            });
+          },
+          enter(data) {
+            return gsap.timeline().to(data.next.container, {
+              opacity: 1,
+            });
+          },
+        },
+      ],
+    });
   }
 
   setupSettings() {
@@ -98,7 +116,6 @@ export default class Sketch {
 
   addObjects() {
     this.geometry = new THREE.PlaneBufferGeometry(1, 1, 100, 100);
-    console.log(this.geometry);
     this.material = new THREE.ShaderMaterial({
       // wireframe: true,
       uniforms: {
