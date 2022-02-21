@@ -6,6 +6,7 @@ import vertex from './shaders/vertex.glsl';
 import testTexture from '../img/texture.jpg';
 import * as dat from 'dat.gui';
 import gsap from 'gsap';
+import barba from '@barba/core';
 
 export default class Sketch {
   constructor(options) {
@@ -36,19 +37,23 @@ export default class Sketch {
 
     this.materials = [];
 
-    this.asscroll = new ASScroll();
-
-    this.asscroll.enable({
-      // horizontalScroll: true,
+    this.asscroll = new ASScroll({
       disableRaf: true,
     });
 
     this.time = 0;
-    this.setupSettings();
+    // this.setupSettings();
     this.addObjects();
     this.resize();
     this.render();
+    this.barba()
     this.setupResize();
+  }
+
+  barba(){
+    barba.init({
+      
+    })
   }
 
   setupSettings() {
@@ -93,13 +98,13 @@ export default class Sketch {
 
   addObjects() {
     this.geometry = new THREE.PlaneBufferGeometry(1, 1, 100, 100);
-
+    console.log(this.geometry);
     this.material = new THREE.ShaderMaterial({
       // wireframe: true,
       uniforms: {
         time: { value: 1.0 },
         uProgress: { value: 0 },
-        uTexture: { value: new THREE.TextureLoader().load(testTexture) },
+        uTexture: { value: null },
         uTextureSize: { value: new THREE.Vector2(100, 100) },
         uCorners: { value: new THREE.Vector4(0, 0, 0, 0) },
         uResolution: { value: new THREE.Vector2(this.width, this.height) },
@@ -108,37 +113,6 @@ export default class Sketch {
       vertexShader: vertex,
       fragmentShader: fragment,
     });
-
-    this.tl = gsap
-      .timeline()
-      .to(this.material.uniforms.uCorners.value, {
-        x: 1,
-        duration: 1,
-      })
-      .to(
-        this.material.uniforms.uCorners.value,
-        {
-          y: 1,
-          duration: 1,
-        },
-        0.1
-      )
-      .to(
-        this.material.uniforms.uCorners.value,
-        {
-          z: 1,
-          duration: 1,
-        },
-        0.2
-      )
-      .to(
-        this.material.uniforms.uCorners.value,
-        {
-          w: 1,
-          duration: 1,
-        },
-        0.3
-      );
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.scale.set(300, 300, 1);
@@ -155,6 +129,72 @@ export default class Sketch {
       texture.needsUpdate = true;
 
       m.uniforms.uTexture.value = texture;
+
+      img.addEventListener('mouseover', () => {
+        this.tl = gsap
+          .timeline()
+          .to(m.uniforms.uCorners.value, {
+            x: 1,
+            duration: 0.4,
+          })
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              y: 1,
+              duration: 0.4,
+            },
+            0.1
+          )
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              z: 1,
+              duration: 0.4,
+            },
+            0.2
+          )
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              w: 1,
+              duration: 0.4,
+            },
+            0.3
+          );
+      });
+
+      img.addEventListener('mouseout', () => {
+        this.tl = gsap
+          .timeline()
+          .to(m.uniforms.uCorners.value, {
+            x: 0,
+            duration: 0.4,
+          })
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              y: 0,
+              duration: 0.4,
+            },
+            0.1
+          )
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              z: 0,
+              duration: 0.4,
+            },
+            0.2
+          )
+          .to(
+            m.uniforms.uCorners.value,
+            {
+              w: 0,
+              duration: 0.4,
+            },
+            0.3
+          );
+      });
 
       let mesh = new THREE.Mesh(this.geometry, m);
       this.scene.add(mesh);
@@ -185,7 +225,7 @@ export default class Sketch {
     // this.material.uniforms.uProgress.value = this.settings.progress;
     this.asscroll.update();
     this.setPosition();
-    this.tl.progress(this.settings.progress);
+    // this.tl.progress(this.settings.progress);
     this.mesh.rotation.x = this.time / 2000;
     this.mesh.rotation.y = this.time / 1000;
     this.renderer.render(this.scene, this.camera);
