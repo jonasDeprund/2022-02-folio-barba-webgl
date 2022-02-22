@@ -39,7 +39,7 @@ canvas {
   flex-direction: row;
   gap: 100px;
   padding: 200px;
-  width: auto;
+  /* width: auto; */
 }
 
 /* item */
